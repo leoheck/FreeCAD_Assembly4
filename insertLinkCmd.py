@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
-# 
+#
 # insertLinkCmd.py
 #
 # LGPL
@@ -43,9 +43,9 @@ class insertLink():
         tooltip += "<p>This command also enables to repair broken/missing links. "
         tooltip += "Select the broken link, launch this command, and select a new target part in the list</p>"
         iconFile = 'Link_Part.svg'
-        return {"MenuText" : "Insert Part", 
-                "ToolTip"  : tooltip, 
-                "Pixmap"   : os.path.join( Asm4.iconPath , iconFile )
+        return {"MenuText": "Insert Part",
+                "ToolTip" : tooltip,
+                "Pixmap"  : os.path.join( Asm4.iconPath , iconFile )
                 }
 
 
@@ -95,7 +95,7 @@ class insertLink():
                 self.rootAssembly = parent
                 self.origLink = selObj
         # if a broken link is selected
-        elif len(Gui.Selection.getSelection())==1 :
+        elif len(Gui.Selection.getSelection())==1:
             selObj = Gui.Selection.getSelection()[0]
             if selObj.isDerivedFrom('App::Link') and selObj.LinkedObject is None:
                 parent = selObj.getParentGeoFeatureGroup()
@@ -156,14 +156,14 @@ class insertLink():
             # don't consider temporary documents. Guard against older versions of FreeCad
             # which don't have the Temporary attribute
             try:
-                docTemporary = doc.Temporary 
+                docTemporary = doc.Temporary
             except AttributeError:
                 docTemporary = False
-                
+
             if not docTemporary:
                 for obj in doc.findObjects("App::Part"):
                     # we don't want to link to itself to the 'Model' object
-                    # other App::Part in the same document are OK 
+                    # other App::Part in the same document are OK
                     # but only those at top level (not nested inside other containers)
                     if obj != self.rootAssembly and obj.getParentGeoFeatureGroup() is None:
                         self.allParts.append( obj )
@@ -239,7 +239,7 @@ class insertLink():
     +-----------------------------------------------+
     """
     def onCreateLink(self):
-        # parse the selected items 
+        # parse the selected items
         selectedPart = []
         for selected in self.partList.selectedIndexes():
             # get the selected part
@@ -276,7 +276,7 @@ class insertLink():
                 createdLink.recompute()
                 # close the dialog UI...
                 self.UI.close()
-                # highlight the link 
+                # highlight the link
                 Gui.Selection.clearSelection()
                 Gui.Selection.addSelection( self.activeDoc.Name, self.rootAssembly.Name, createdLink.Name+'.' )
                 # ... and launch the placement of the inserted part if we're in an Asm4 Assembly
@@ -289,7 +289,7 @@ class insertLink():
         self.UI.close()
 
 
-    def onItemClicked( self, item ):
+    def onItemClicked(self, item):
         for selected in self.partList.selectedIndexes():
             # get the selected part
             part = self.allParts[ selected.row() ]
@@ -316,6 +316,11 @@ class insertLink():
     |     defines the UI, only static elements      |
     +-----------------------------------------------+
     """
+
+    def mouseDoubleClickEvent(self, event):
+        self.onCreateLink()
+        # print('dblclick:', event.text())
+
     def drawUI(self):
         # Our main window is a QDialog
         # make this dialog stay above the others, always visible
@@ -333,21 +338,22 @@ class insertLink():
         self.partList = QtGui.QListWidget(self.UI)
         # Create a line that will contain the name of the link (in the tree)
         self.linkNameInput = QtGui.QLineEdit(self.UI)
-        # Cancel button
         self.cancelButton = QtGui.QPushButton('Cancel', self.UI)
-        # Cancel button
         self.openFileButton = QtGui.QPushButton('Open file', self.UI)
-        # Insert Link button
         self.insertButton = QtGui.QPushButton('Insert', self.UI)
         self.insertButton.setDefault(True)
 
+        # self.connect(self.partList, QtCore.SIGNAL("itemDoubleClicked(QListWidgetItem *)"), self.showItem)
+        self.partList.itemDoubleClicked.connect(self.mouseDoubleClickEvent)
+
+
         # Place the widgets with layouts
         self.mainLayout = QtGui.QVBoxLayout(self.UI)
-        self.mainLayout.addWidget(QtGui.QLabel("Filter :"))
+        self.mainLayout.addWidget(QtGui.QLabel("Filter:"))
         self.mainLayout.addWidget(self.filterPartList)
-        self.mainLayout.addWidget(QtGui.QLabel("Select Part to be inserted :"))
+        self.mainLayout.addWidget(QtGui.QLabel("Select Part to be inserted:"))
         self.mainLayout.addWidget(self.partList)
-        self.mainLayout.addWidget(QtGui.QLabel("Name for the link :"))
+        self.mainLayout.addWidget(QtGui.QLabel("Name for the link:"))
         self.mainLayout.addWidget(self.linkNameInput)
         self.mainLayout.addWidget(QtGui.QLabel(' '))
         self.buttonsLayout = QtGui.QHBoxLayout()
