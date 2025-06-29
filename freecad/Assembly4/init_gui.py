@@ -199,7 +199,7 @@ class Assembly4Workbench(Gui.Workbench):
 
         # Define Toolbars
         # commands to appear in the Assembly4 toolbar
-        self.appendToolbar("Assembly", self.assemblyToolbarItems())
+        self.appendToolbar("Assembly4", self.assemblyToolbarItems())
 
         # build the selection toolbar
         self.appendToolbar("Selection Filter", self.selectionToolbarItems())
@@ -358,7 +358,7 @@ class Assembly4Workbench(Gui.Workbench):
         self.appendContextMenu("", "Separator")
         self.appendContextMenu("", contextMenu)  # add commands to the context menu
         self.appendContextMenu(
-            "Assembly", assemblySubMenu
+            "Assembly4", assemblySubMenu
         )  # add commands to the context menu
         self.appendContextMenu(
             "Create", createSubMenu
